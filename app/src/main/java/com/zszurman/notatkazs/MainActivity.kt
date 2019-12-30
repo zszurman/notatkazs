@@ -67,7 +67,12 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, TableInfo.COL_TITLE + " like ?", selectionArgs, TableInfo.COL_TITLE)
+        val cursor = dbHelper.qery(
+            projections,
+            TableInfo.COL_TITLE + " like ?",
+            selectionArgs,
+            TableInfo.COL_TITLE
+        )
         listNotes.clear()
 
         if (cursor.moveToFirst()) {
@@ -87,12 +92,12 @@ class MainActivity : AppCompatActivity() {
         val mActionBar = supportActionBar
         if (mActionBar != null) {
             if (total == 0) {
-                mActionBar.subtitle = "Nie masz notatki"
+                mActionBar.subtitle = "Nie masz notatek"
 
             } else if (total == 1) {
                 mActionBar.subtitle = "Masz 1 notatkę"
             } else {
-                mActionBar.subtitle = "Ilość notatek: $total "
+                mActionBar.subtitle = "Ilość notatek: $total"
             }
 
         }
@@ -103,7 +108,12 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, TableInfo.COL_TITLE + " like ?", selectionArgs, TableInfo.COL_TITLE)
+        val cursor = dbHelper.qery(
+            projections,
+            TableInfo.COL_TITLE + " like ?",
+            selectionArgs,
+            TableInfo.COL_TITLE
+        )
         listNotes.clear()
 
         if (cursor.moveToLast()) {
@@ -139,7 +149,12 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, TableInfo.COL_ID + " like ?", selectionArgs, TableInfo.COL_ID)
+        val cursor = dbHelper.qery(
+            projections,
+            TableInfo.COL_ID + " like ?",
+            selectionArgs,
+            TableInfo.COL_ID
+        )
         listNotes.clear()
 
         if (cursor.moveToLast()) {
@@ -175,7 +190,12 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, TableInfo.COL_ID + " like ?", selectionArgs, TableInfo.COL_ID)
+        val cursor = dbHelper.qery(
+            projections,
+            TableInfo.COL_ID + " like ?",
+            selectionArgs,
+            TableInfo.COL_ID
+        )
         listNotes.clear()
 
         if (cursor.moveToFirst()) {
@@ -309,13 +329,26 @@ class MainActivity : AppCompatActivity() {
 
             myView.deleteBtn.setOnClickListener {
 
+                val builder = AlertDialog.Builder(this@MainActivity)
+                builder.setTitle("Uwaga")
+                builder.setMessage("Chcesz usunąć notatkę")
 
+                builder.setPositiveButton("Tak") { dialog, which ->
+                    var dbHelper = DbHelper(this.context!!)
+                    val selectionArgs = arrayOf(myNote.nodeId.toString())
+                    dbHelper.delete("ID=?", selectionArgs)
+                    loadQeryAscending("%")
+                    Toast.makeText(this@MainActivity, "Notatkę usunięto", Toast.LENGTH_SHORT).show()
+                }
 
+                builder.setNegativeButton("Nie") { dialog, which ->
+                    Toast.makeText(applicationContext, "Nie usunięto notatki", Toast.LENGTH_SHORT)
+                        .show()
+                }
 
-                var dbHelper = DbHelper(this.context!!)
-                val selectionArgs = arrayOf(myNote.nodeId.toString())
-                dbHelper.delete("ID=?", selectionArgs)
-                loadQeryAscending("%")
+                val dialog: AlertDialog = builder.create()
+                dialog.show()
+
             }
 
             myView.editBtn.setOnClickListener {
