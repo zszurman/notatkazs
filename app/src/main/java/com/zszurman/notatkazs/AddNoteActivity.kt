@@ -19,6 +19,8 @@ class AddNoteActivity : AppCompatActivity() {
             val bundle:Bundle = intent.extras
             id = bundle.getInt("ID",0)
             if (id !=0){
+                supportActionBar!!.title = "Update note"
+                addBtn.text = "Update"
                 titleEt.setText(bundle.getString("name"))
                 descEt.setText(bundle.getString("des"))
 
@@ -33,8 +35,8 @@ class AddNoteActivity : AppCompatActivity() {
     fun klik(view: View) {
         var dbHelper = DbHelper(this)
         var values = ContentValues()
-        values.put(TableInfo.COL_TITLE, titleEt.toString())
-        values.put(TableInfo.COL_DES, descEt.toString())
+        values.put(TableInfo.COL_TITLE, titleEt.text.toString())
+        values.put(TableInfo.COL_DES, descEt.text.toString())
 
         if (id == 0) {
             val ID = dbHelper.insert(values)

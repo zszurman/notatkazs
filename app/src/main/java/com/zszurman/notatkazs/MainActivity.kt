@@ -59,8 +59,15 @@ class MainActivity : AppCompatActivity() {
 
         val total = notesZs.count
         val mActionBar = supportActionBar
-        if (mActionBar != null){
-            mActionBar.subtitle = "Masz  $total notatki"
+        if (mActionBar != null) {
+            if (total == 0) {
+                mActionBar.subtitle = "Nie masz notatki"
+
+            } else if (total == 1) {
+                mActionBar.subtitle = "Masz 1 notatkę"
+            } else {
+                mActionBar.subtitle = "Ilość notatek: $total "
+            }
 
         }
     }
@@ -90,12 +97,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item !=null){
-            when (item.itemId){
+        if (item != null) {
+            when (item.itemId) {
                 R.id.addNote -> {
                     startActivity(Intent(this, AddNoteActivity::class.java))
                 }
-                R.id.action_settings ->{
+                R.id.action_settings -> {
                     Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
                 }
             }
