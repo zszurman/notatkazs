@@ -38,12 +38,12 @@ class MainActivity : AppCompatActivity() {
             this.getSharedPreferences("My_Data", android.content.Context.MODE_PRIVATE)
 
 
-        val mSorting = mSharedPreferences!!.getString("Sort", "newest")
+        val mSorting = mSharedPreferences!!.getString("Sort", "najnowsza")
         when (mSorting) {
-            "newest" -> loadQeryNewest("%")
-            "oldest" -> loadQeryOldest("%")
-            "ascending" -> loadQeryAscending("%")
-            "descending" -> loadQeryDescending("%")
+            "najnowsza" -> loadQeryNewest("%")
+            "najstarsza" -> loadQeryOldest("%")
+            "rosnaco" -> loadQeryAscending("%")
+            "malejaco" -> loadQeryDescending("%")
 
         }
 
@@ -51,12 +51,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val mSorting = mSharedPreferences!!.getString("Sort", "newest")
+        val mSorting = mSharedPreferences!!.getString("Sort", "najnowsza")
         when (mSorting) {
-            "newest" -> loadQeryNewest("%")
-            "oldest" -> loadQeryOldest("%")
-            "ascending" -> loadQeryAscending("%")
-            "descending" -> loadQeryDescending("%")
+            "najnowsza" -> loadQeryNewest("%")
+            "najstarsza" -> loadQeryOldest("%")
+            "rosnaco" -> loadQeryAscending("%")
+            "malejaco" -> loadQeryDescending("%")
         }
 
     }
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, "Title like ?", selectionArgs, "Title")
+        val cursor = dbHelper.qery(projections, TableInfo.COL_TITLE + " like ?", selectionArgs, TableInfo.COL_TITLE)
         listNotes.clear()
 
         if (cursor.moveToFirst()) {
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, "Title like ?", selectionArgs, "Title")
+        val cursor = dbHelper.qery(projections, TableInfo.COL_TITLE + " like ?", selectionArgs, TableInfo.COL_TITLE)
         listNotes.clear()
 
         if (cursor.moveToLast()) {
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, "ID like ?", selectionArgs, "ID")
+        val cursor = dbHelper.qery(projections, TableInfo.COL_ID + " like ?", selectionArgs, TableInfo.COL_ID)
         listNotes.clear()
 
         if (cursor.moveToLast()) {
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
 
-        val cursor = dbHelper.qery(projections, "ID like ?", selectionArgs, "ID")
+        val cursor = dbHelper.qery(projections, TableInfo.COL_ID + " like ?", selectionArgs, TableInfo.COL_ID)
         listNotes.clear()
 
         if (cursor.moveToFirst()) {
@@ -246,38 +246,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSortDialog() {
-        val sortOptions = arrayOf("News", "Oldest", "Title(Ascending)", "Title(Descending")
+        val sortOptions = arrayOf("najnowsza", "najstarsza", "alfabetycznie(+)", "alfabetycznie(-)")
         val mBilder = AlertDialog.Builder(this)
         mBilder.setTitle("Sortuj wg")
         mBilder.setIcon(R.drawable.ic_action_sort)
         mBilder.setSingleChoiceItems(sortOptions, -1) { dialogInterface, i ->
             if (i == 0) {
-                Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "najnowsza", Toast.LENGTH_SHORT).show()
                 val editor = mSharedPreferences!!.edit()
-                editor.putString("Sort", "newest")
+                editor.putString("Sort", "najnowsza")
                 editor.apply()
                 loadQeryNewest("%")
             }
             if (i == 1) {
-                Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "najstarsza", Toast.LENGTH_SHORT).show()
                 val editor = mSharedPreferences!!.edit()
-                editor.putString("Sort", "oldest")
+                editor.putString("Sort", "najstarsza")
                 editor.apply()
                 loadQeryOldest("%")
 
             }
             if (i == 2) {
-                Toast.makeText(this, "Title(Ascending)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "alfabetycznie(+)", Toast.LENGTH_SHORT).show()
                 val editor = mSharedPreferences!!.edit()
-                editor.putString("Sort", "ascending")
+                editor.putString("Sort", "rosnaco")
                 editor.apply()
                 loadQeryAscending("%")
 
             }
             if (i == 3) {
-                Toast.makeText(this, "Title(Descending)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "alfabetycznie(-)", Toast.LENGTH_SHORT).show()
                 val editor = mSharedPreferences!!.edit()
-                editor.putString("Sort", "descending")
+                editor.putString("Sort", "malejaco")
                 editor.apply()
                 loadQeryDescending("%")
 
@@ -308,6 +308,10 @@ class MainActivity : AppCompatActivity() {
             myView.descTv.text = myNote.nodeDes
 
             myView.deleteBtn.setOnClickListener {
+
+
+
+
                 var dbHelper = DbHelper(this.context!!)
                 val selectionArgs = arrayOf(myNote.nodeId.toString())
                 dbHelper.delete("ID=?", selectionArgs)
@@ -325,7 +329,7 @@ class MainActivity : AppCompatActivity() {
                 val s = title + "\n" + desc
                 val cb = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 cb.text = s
-                Toast.makeText(this@MainActivity, "Copied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Skopiowano", Toast.LENGTH_SHORT).show()
 
             }
 
@@ -367,4 +371,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
 
     }
+
+
 }
