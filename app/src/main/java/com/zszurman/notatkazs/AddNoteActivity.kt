@@ -19,8 +19,8 @@ class AddNoteActivity : AppCompatActivity() {
             val bundle:Bundle = intent.extras
             id = bundle.getInt("ID",0)
             if (id !=0){
-                supportActionBar!!.title = "Update note"
-                addBtn.text = "Update"
+                supportActionBar!!.title = "Aktualizacja notatki"
+                addBtn.text = "Aktualizuj"
                 titleEt.setText(bundle.getString("name"))
                 descEt.setText(bundle.getString("des"))
 
@@ -52,12 +52,12 @@ class AddNoteActivity : AppCompatActivity() {
             var selectionArgs = arrayOf(id.toString())
             val ID = dbHelper.update(values, "ID=?", selectionArgs)
             if (ID>0){
-                Toast.makeText(this, "Notatkę dodano", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Notatkę zaktualizowano", Toast.LENGTH_SHORT).show()
                 finish()
 
             }
             else {
-                Toast.makeText(this, "Błądw dodaniu notatki", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Błąd w aktualizacji notatki", Toast.LENGTH_SHORT).show()
 
             }
 

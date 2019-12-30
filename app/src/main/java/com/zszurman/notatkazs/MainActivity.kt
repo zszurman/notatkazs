@@ -1,9 +1,11 @@
 package com.zszurman.notatkazs
 
 
+import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.ClipboardManager
@@ -25,25 +27,157 @@ import kotlinx.android.synthetic.main.row.view.*
 class MainActivity : AppCompatActivity() {
 
     var listNotes = ArrayList<Note>()
+    var mSharedPreferences: SharedPreferences? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        LoadQery("%")
+        mSharedPreferences =
+            this.getSharedPreferences("My_Data", android.content.Context.MODE_PRIVATE)
+
+
+        val mSorting = mSharedPreferences!!.getString("Sort", "newest")
+        when (mSorting) {
+            "newest" -> loadQeryNewest("%")
+            "oldest" -> loadQeryOldest("%")
+            "ascending" -> loadQeryAscending("%")
+            "descending" -> loadQeryDescending("%")
+
+        }
+
     }
 
     override fun onResume() {
         super.onResume()
-        LoadQery("%")
+        val mSorting = mSharedPreferences!!.getString("Sort", "newest")
+        when (mSorting) {
+            "newest" -> loadQeryNewest("%")
+            "oldest" -> loadQeryOldest("%")
+            "ascending" -> loadQeryAscending("%")
+            "descending" -> loadQeryDescending("%")
+        }
+
     }
 
-    private fun LoadQery(title: String) {
+
+    private fun loadQeryAscending(title: String) {
         var dbHelper = DbHelper(this)
         val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
         val selectionArgs = arrayOf(title)
+
         val cursor = dbHelper.qery(projections, "Title like ?", selectionArgs, "Title")
         listNotes.clear()
+
+        if (cursor.moveToFirst()) {
+            do {
+                val ID = cursor.getInt(cursor.getColumnIndex(TableInfo.COL_ID))
+                val Title = cursor.getString(cursor.getColumnIndex(TableInfo.COL_TITLE))
+                val Description = cursor.getString(cursor.getColumnIndex(TableInfo.COL_DES))
+
+                listNotes.add(Note(ID, Title, Description))
+            } while (cursor.moveToNext())
+        }
+
+        var myNotesAdapter = MyNotesAdapter(this, listNotes)
+        notesZs.adapter = myNotesAdapter
+
+        val total = notesZs.count
+        val mActionBar = supportActionBar
+        if (mActionBar != null) {
+            if (total == 0) {
+                mActionBar.subtitle = "Nie masz notatki"
+
+            } else if (total == 1) {
+                mActionBar.subtitle = "Masz 1 notatkę"
+            } else {
+                mActionBar.subtitle = "Ilość notatek: $total "
+            }
+
+        }
+    }
+
+    private fun loadQeryDescending(title: String) {
+        var dbHelper = DbHelper(this)
+        val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
+        val selectionArgs = arrayOf(title)
+
+        val cursor = dbHelper.qery(projections, "Title like ?", selectionArgs, "Title")
+        listNotes.clear()
+
+        if (cursor.moveToLast()) {
+            do {
+                val ID = cursor.getInt(cursor.getColumnIndex(TableInfo.COL_ID))
+                val Title = cursor.getString(cursor.getColumnIndex(TableInfo.COL_TITLE))
+                val Description = cursor.getString(cursor.getColumnIndex(TableInfo.COL_DES))
+
+                listNotes.add(Note(ID, Title, Description))
+            } while (cursor.moveToPrevious())
+        }
+
+        var myNotesAdapter = MyNotesAdapter(this, listNotes)
+        notesZs.adapter = myNotesAdapter
+
+        val total = notesZs.count
+        val mActionBar = supportActionBar
+        if (mActionBar != null) {
+            if (total == 0) {
+                mActionBar.subtitle = "Nie masz notatki"
+
+            } else if (total == 1) {
+                mActionBar.subtitle = "Masz 1 notatkę"
+            } else {
+                mActionBar.subtitle = "Ilość notatek: $total "
+            }
+
+        }
+    }
+
+    private fun loadQeryNewest(title: String) {
+        var dbHelper = DbHelper(this)
+        val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
+        val selectionArgs = arrayOf(title)
+
+        val cursor = dbHelper.qery(projections, "ID like ?", selectionArgs, "ID")
+        listNotes.clear()
+
+        if (cursor.moveToLast()) {
+            do {
+                val ID = cursor.getInt(cursor.getColumnIndex(TableInfo.COL_ID))
+                val Title = cursor.getString(cursor.getColumnIndex(TableInfo.COL_TITLE))
+                val Description = cursor.getString(cursor.getColumnIndex(TableInfo.COL_DES))
+
+                listNotes.add(Note(ID, Title, Description))
+            } while (cursor.moveToPrevious())
+        }
+
+        var myNotesAdapter = MyNotesAdapter(this, listNotes)
+        notesZs.adapter = myNotesAdapter
+
+        val total = notesZs.count
+        val mActionBar = supportActionBar
+        if (mActionBar != null) {
+            if (total == 0) {
+                mActionBar.subtitle = "Nie masz notatki"
+
+            } else if (total == 1) {
+                mActionBar.subtitle = "Masz 1 notatkę"
+            } else {
+                mActionBar.subtitle = "Ilość notatek: $total "
+            }
+
+        }
+    }
+
+    private fun loadQeryOldest(title: String) {
+        var dbHelper = DbHelper(this)
+        val projections = arrayOf(TableInfo.COL_ID, TableInfo.COL_TITLE, TableInfo.COL_DES)
+        val selectionArgs = arrayOf(title)
+
+        val cursor = dbHelper.qery(projections, "ID like ?", selectionArgs, "ID")
+        listNotes.clear()
+
         if (cursor.moveToFirst()) {
             do {
                 val ID = cursor.getInt(cursor.getColumnIndex(TableInfo.COL_ID))
@@ -82,12 +216,12 @@ class MainActivity : AppCompatActivity() {
         sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextSubmit(query: String?): Boolean {
-                LoadQery("%" + query + "%")
+                loadQeryAscending("%" + query + "%")
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                LoadQery("%" + newText + "%")
+                loadQeryAscending("%" + newText + "%")
                 return false
             }
         })
@@ -102,13 +236,58 @@ class MainActivity : AppCompatActivity() {
                 R.id.addNote -> {
                     startActivity(Intent(this, AddNoteActivity::class.java))
                 }
-                R.id.action_settings -> {
-                    Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+                R.id.action_sort -> {
+                    showSortDialog()
                 }
             }
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showSortDialog() {
+        val sortOptions = arrayOf("News", "Oldest", "Title(Ascending)", "Title(Descending")
+        val mBilder = AlertDialog.Builder(this)
+        mBilder.setTitle("Sortuj wg")
+        mBilder.setIcon(R.drawable.ic_action_sort)
+        mBilder.setSingleChoiceItems(sortOptions, -1) { dialogInterface, i ->
+            if (i == 0) {
+                Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
+                val editor = mSharedPreferences!!.edit()
+                editor.putString("Sort", "newest")
+                editor.apply()
+                loadQeryNewest("%")
+            }
+            if (i == 1) {
+                Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
+                val editor = mSharedPreferences!!.edit()
+                editor.putString("Sort", "oldest")
+                editor.apply()
+                loadQeryOldest("%")
+
+            }
+            if (i == 2) {
+                Toast.makeText(this, "Title(Ascending)", Toast.LENGTH_SHORT).show()
+                val editor = mSharedPreferences!!.edit()
+                editor.putString("Sort", "ascending")
+                editor.apply()
+                loadQeryAscending("%")
+
+            }
+            if (i == 3) {
+                Toast.makeText(this, "Title(Descending)", Toast.LENGTH_SHORT).show()
+                val editor = mSharedPreferences!!.edit()
+                editor.putString("Sort", "descending")
+                editor.apply()
+                loadQeryDescending("%")
+
+            }
+            dialogInterface.dismiss()
+        }
+
+        val mDialog = mBilder.create()
+        mDialog.show()
+
     }
 
     inner class MyNotesAdapter : BaseAdapter {
@@ -132,7 +311,7 @@ class MainActivity : AppCompatActivity() {
                 var dbHelper = DbHelper(this.context!!)
                 val selectionArgs = arrayOf(myNote.nodeId.toString())
                 dbHelper.delete("ID=?", selectionArgs)
-                LoadQery("%")
+                loadQeryAscending("%")
             }
 
             myView.editBtn.setOnClickListener {

@@ -31,7 +31,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:hint="Enter Title"
+                    android:hint="Wpisz tytuł"
+                    android:inputType="textCapSentences"
                     android:padding="10dp"
                     android:singleLine="true"
                     android:textStyle="bold" />
@@ -42,7 +43,8 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:gravity="top"
-                    android:hint="Enter description..."
+                    android:hint="Wpisz notatkę"
+                    android:inputType="textCapSentences|textMultiLine"
                     android:minHeight="100dp"
                     android:padding="10dp" />
 
@@ -59,7 +61,7 @@
             android:layout_gravity="end"
             android:layout_marginEnd="5dp"
             android:onClick="klik"
-            android:text="Add" />
+            android:text="Dodaj" />
 
 
     </LinearLayout>
